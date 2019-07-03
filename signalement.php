@@ -6,7 +6,7 @@ if(isset($_GET['logout']) && isset($_SESSION['user'])){
     unset($_SESSION["user"]);
 }
 
-//envoyer mail via php
+/*envoyer mail via php
 
 if(isset($_POST['mailForm'])) {
     if(!empty($_POST['email']) AND !empty($_POST['message'])) {
@@ -33,7 +33,46 @@ if(isset($_POST['mailForm'])) {
    } else {
         $msg="Votre mail n'a pu être envoyé. Veuillez réessayer.";
     }
-}
+} */
+
+if(isset($_POST['formConfirm'])) {
+$email = htmlspecialchars($_POST['email']);
+$message = sha1($_POST['message']);
+if(!empty($_POST['mail']) AND !empty($_POST['message'])) {
+
+                $getMail = $db->prepare("SELECT * FROM message WHERE email = ?");
+                $getMail->execute(array($email));
+                $mailExist = $getMail->rowCount();
+                if($mailExist == 0) {
+                        $insertmbr = $db->prepare("INSERT INTO message(email, message) VALUES(?, ?)");
+
+                        $insertmbr->execute(array($email, $message));
+
+                        $header="MIME-Version: 1.0\r\n";
+                        $header.='From:"PrimFX.com"<support@primfx.com>'."\n";
+                        $header.='Content-Type:text/html; charset="uft-8"'."\n";
+                        $header.='Content-Transfer-Encoding: 8bit';
+                        $message='
+                     <html>
+                        <body>
+                           <div align="center">
+                              <p>Contact</p>
+                              <p>Merci, votre message a bien été envoyé.</p>
+                           </div>
+                        </body>
+                     </html>
+                     ';
+                        mail($email, $message, $header);
+                        $erreur = "Votre message a été envoyé avec succès. <a href=\"login-register.php\">Me connecter</a>";
+                    } else {
+                        $erreur = "Les informations de sont pas correctes.";
+                    }
+                } else {
+                    $erreur = "Les informations de sont pas correctes.";
+                }
+            }
+
+?>
 
 ?>
 <!DOCTYPE html>
@@ -209,7 +248,7 @@ if(isset($_POST['mailForm'])) {
                     </div>
 
                 <div class="text-right">
-                    <a href="user-profile.php"><input class="sendBtn" type="submit" value="Valider"/></a>
+                    <a href="user-profile.php"><input class="sendBtn" type="submit" name="formConfirm" value="Valider"/></a>
                 </div>
             </form>
         </div>
@@ -269,7 +308,7 @@ if(isset($_POST['mailForm'])) {
                 </div>
 
                 <div class="text-right">
-                    <a href="user-profile.php"><input class="sendBtn" type="submit" value="Valider"/></a>
+                    <a href="user-profile.php"><input class="sendBtn" type="submit" name="formConfirm" value="Valider"/></a>
                 </div>
             </form>
         </div>

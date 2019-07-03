@@ -38,7 +38,7 @@ if (isset($_SESSION['id']['first_connection']) AND $_SESSION['id']['first_connec
 <body>
 
 
-
+<?php require 'partials/nav.php'; ?>
 
             <article style="width: 80%; margin-left: auto; margin-right: auto;">
 
